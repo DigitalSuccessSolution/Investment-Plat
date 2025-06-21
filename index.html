@@ -1,0 +1,2726 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Intec Investment Platform</title>
+    <script src="https://cdn.tailwindcss.com/3.4.16"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: { primary: "#0056b3", secondary: "#ffa500" },
+            borderRadius: {
+              none: "0px",
+              sm: "4px",
+              DEFAULT: "8px",
+              md: "12px",
+              lg: "16px",
+              xl: "20px",
+              "2xl": "24px",
+              "3xl": "32px",
+              full: "9999px",
+              button: "8px",
+            },
+          },
+        },
+      };
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css"
+      rel="stylesheet"
+    />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.5.0/echarts.min.js"></script>
+    <style>
+      :where([class^="ri-"])::before { content: "\f3c2"; }
+      body {
+          font-family: 'Inter', sans-serif;
+          scroll-behavior: smooth;
+      }
+      .header-transparent {
+          background-color: rgba(255, 255, 255, 0);
+          transition: background-color 0.3s ease;
+      }
+      .header-solid {
+          background-color: rgba(255, 255, 255, 0.95);
+          box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+      }
+      .animate-fade-in {
+          opacity: 0;
+          transform: translateY(20px);
+          transition: opacity 0.6s ease, transform 0.6s ease;
+      }
+      .animate-fade-in.visible {
+          opacity: 1;
+          transform: translateY(0);
+      }
+      .hamburger-menu {
+          width: 24px;
+          height: 18px;
+          position: relative;
+          cursor: pointer;
+      }
+      .hamburger-menu span {
+          display: block;
+          position: absolute;
+          height: 2px;
+          width: 100%;
+          background: #0056b3;
+          border-radius: 9px;
+          opacity: 1;
+          left: 0;
+          transform: rotate(0deg);
+          transition: .25s ease-in-out;
+      }
+      .hamburger-menu span:nth-child(1) {
+          top: 0px;
+      }
+      .hamburger-menu span:nth-child(2), .hamburger-menu span:nth-child(3) {
+          top: 8px;
+      }
+      .hamburger-menu span:nth-child(4) {
+          top: 16px;
+      }
+      .hamburger-menu.open span:nth-child(1) {
+          top: 8px;
+          width: 0%;
+          left: 50%;
+      }
+      .hamburger-menu.open span:nth-child(2) {
+          transform: rotate(45deg);
+      }
+      .hamburger-menu.open span:nth-child(3) {
+          transform: rotate(-45deg);
+      }
+      .hamburger-menu.open span:nth-child(4) {
+          top: 8px;
+          width: 0%;
+          left: 50%;
+      }
+      .mobile-menu {
+          position: fixed;
+          top: 0;
+          right: -100%;
+          width: 80%;
+          max-width: 300px;
+          height: 100vh;
+          background: white;
+          transition: right 0.3s ease;
+          z-index: 50;
+          box-shadow: -2px 0 10px rgba(0,0,0,0.1);
+          overflow-y: auto;
+      }
+      .mobile-menu.open {
+          right: 0;
+      }
+      .overlay {
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background: rgba(0,0,0,0.5);
+          opacity: 0;
+          visibility: hidden;
+          transition: opacity 0.3s ease;
+          z-index: 40;
+      }
+      .overlay.open {
+          opacity: 1;
+          visibility: visible;
+      }
+      .dropdown-menu {
+          display: none;
+          position: absolute;
+          top: 100%;
+          left: 0;
+          background: white;
+          min-width: 200px;
+          box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+          border-radius: 8px;
+          z-index: 20;
+          opacity: 0;
+          transform: translateY(10px);
+          transition: opacity 0.2s ease, transform 0.2s ease;
+      }
+      .dropdown:hover .dropdown-menu {
+          display: block;
+          opacity: 1;
+          transform: translateY(0);
+      }
+      .service-card {
+          transition: transform 0.3s ease, box-shadow 0.3s ease;
+      }
+      .service-card:hover {
+          transform: translateY(-5px);
+          box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+      }
+      .tab-content {
+          display: none;
+      }
+      .tab-content.active {
+          display: block;
+          animation: fadeIn 0.5s ease forwards;
+      }
+      @keyframes fadeIn {
+          from { opacity: 0; transform: translateY(10px); }
+          to { opacity: 1; transform: translateY(0); }
+      }
+      input[type="range"] {
+          -webkit-appearance: none;
+          width: 100%;
+          height: 8px;
+          border-radius: 5px;
+          background: #e2e8f0;
+          outline: none;
+      }
+      input[type="range"]::-webkit-slider-thumb {
+          -webkit-appearance: none;
+          appearance: none;
+          width: 20px;
+          height: 20px;
+          border-radius: 50%;
+          background: #0056b3;
+          cursor: pointer;
+          box-shadow: 0 2px 6px rgba(0, 86, 179, 0.3);
+      }
+      input[type="range"]::-moz-range-thumb {
+          width: 20px;
+          height: 20px;
+          border-radius: 50%;
+          background: #0056b3;
+          cursor: pointer;
+          box-shadow: 0 2px 6px rgba(0, 86, 179, 0.3);
+          border: none;
+      }
+      .custom-checkbox {
+          position: relative;
+          padding-left: 30px;
+          cursor: pointer;
+          user-select: none;
+      }
+      .custom-checkbox input {
+          position: absolute;
+          opacity: 0;
+          cursor: pointer;
+          height: 0;
+          width: 0;
+      }
+      .checkmark {
+          position: absolute;
+          top: 0;
+          left: 0;
+          height: 20px;
+          width: 20px;
+          background-color: #fff;
+          border: 2px solid #cbd5e0;
+          border-radius: 4px;
+          transition: all 0.2s ease;
+      }
+      .custom-checkbox:hover input ~ .checkmark {
+          border-color: #0056b3;
+      }
+      .custom-checkbox input:checked ~ .checkmark {
+          background-color: #0056b3;
+          border-color: #0056b3;
+      }
+      .checkmark:after {
+          content: "";
+          position: absolute;
+          display: none;
+      }
+      .custom-checkbox input:checked ~ .checkmark:after {
+          display: block;
+      }
+      .custom-checkbox .checkmark:after {
+          left: 6px;
+          top: 2px;
+          width: 5px;
+          height: 10px;
+          border: solid white;
+          border-width: 0 2px 2px 0;
+          transform: rotate(45deg);
+      }
+      .switch {
+          position: relative;
+          display: inline-block;
+          width: 50px;
+          height: 24px;
+      }
+      .switch input {
+          opacity: 0;
+          width: 0;
+          height: 0;
+      }
+      .slider {
+          position: absolute;
+          cursor: pointer;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background-color: #ccc;
+          transition: .4s;
+          border-radius: 34px;
+      }
+      .slider:before {
+          position: absolute;
+          content: "";
+          height: 18px;
+          width: 18px;
+          left: 3px;
+          bottom: 3px;
+          background-color: white;
+          transition: .4s;
+          border-radius: 50%;
+      }
+      input:checked + .slider {
+          background-color: #0056b3;
+      }
+      input:checked + .slider:before {
+          transform: translateX(26px);
+      }
+      .toast {
+          position: fixed;
+          bottom: 20px;
+          right: 20px;
+          background: #333;
+          color: white;
+          padding: 12px 20px;
+          border-radius: 8px;
+          box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          z-index: 100;
+          opacity: 0;
+          transform: translateY(20px);
+          transition: opacity 0.3s, transform 0.3s;
+      }
+      .toast.show {
+          opacity: 1;
+          transform: translateY(0);
+      }
+      .tooltip {
+          position: relative;
+          display: inline-block;
+      }
+      .tooltip .tooltip-text {
+          visibility: hidden;
+          width: 200px;
+          background-color: #333;
+          color: #fff;
+          text-align: center;
+          border-radius: 6px;
+          padding: 8px;
+          position: absolute;
+          z-index: 1;
+          bottom: 125%;
+          left: 50%;
+          margin-left: -100px;
+          opacity: 0;
+          transition: opacity 0.3s;
+      }
+      .tooltip .tooltip-text::after {
+          content: "";
+          position: absolute;
+          top: 100%;
+          left: 50%;
+          margin-left: -5px;
+          border-width: 5px;
+          border-style: solid;
+          border-color: #333 transparent transparent transparent;
+      }
+      .tooltip:hover .tooltip-text {
+          visibility: visible;
+          opacity: 1;
+      }
+    </style>
+  </head>
+  <body class="bg-gray-50">
+    <!-- Header -->
+    <header id="header" class="header-transparent fixed w-full z-50">
+      <div
+        class="container mx-auto px-4 py-4 flex items-center justify-between"
+      >
+        <a href="#" class="text-2xl font-['Pacifico'] text-primary">Intec</a>
+
+        <!-- Desktop Navigation -->
+        <nav class="hidden md:flex items-center space-x-8">
+          <a
+            href="#home"
+            class="text-gray-800 hover:text-primary font-medium transition-colors"
+            >Home</a
+          >
+
+          <div class="dropdown relative">
+            <button
+              class="text-gray-800 hover:text-primary font-medium transition-colors flex items-center"
+            >
+              Services
+              <div class="w-4 h-4 flex items-center justify-center ml-1">
+                <i class="ri-arrow-down-s-line"></i>
+              </div>
+            </button>
+            <div class="dropdown-menu p-2">
+              <a
+                href="#services"
+                class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-button"
+                >Investment Plans</a
+              >
+              <a
+                href="#services"
+                class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-button"
+                >Financial Advisory</a
+              >
+              <a
+                href="#services"
+                class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-button"
+                >Wealth Management</a
+              >
+            </div>
+          </div>
+
+          <a
+            href="#about"
+            class="text-gray-800 hover:text-primary font-medium transition-colors"
+            >About Us</a
+          >
+          <a
+            href="#features"
+            class="text-gray-800 hover:text-primary font-medium transition-colors"
+            >Features</a
+          >
+          <a
+            href="#contact"
+            class="text-gray-800 hover:text-primary font-medium transition-colors"
+            >Contact</a
+          >
+        </nav>
+
+        <div class="hidden md:block">
+          <a
+            href="#contact"
+            class="bg-primary text-white px-6 py-2 rounded-button font-medium hover:bg-primary/90 transition-colors shadow-md !rounded-button whitespace-nowrap"
+            >Get Started</a
+          >
+        </div>
+
+        <!-- Mobile Menu Button -->
+        <div class="md:hidden hamburger-menu" id="hamburger-button">
+          <span></span>
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+      </div>
+    </header>
+
+    <!-- Mobile Menu -->
+    <div class="mobile-menu" id="mobile-menu">
+      <div class="p-6">
+        <div class="flex items-center justify-between mb-8">
+          <a href="#" class="text-2xl font-['Pacifico'] text-primary">Intec</a>
+          <div
+            class="w-8 h-8 flex items-center justify-center cursor-pointer"
+            id="close-menu"
+          >
+            <i class="ri-close-line text-2xl text-gray-700"></i>
+          </div>
+        </div>
+
+        <nav class="flex flex-col space-y-4">
+          <a
+            href="#home"
+            class="text-gray-800 hover:text-primary font-medium py-2 border-b border-gray-100"
+            >Home</a
+          >
+
+          <div class="mobile-dropdown">
+            <button
+              class="w-full text-left text-gray-800 hover:text-primary font-medium py-2 border-b border-gray-100 flex items-center justify-between"
+              id="mobile-dropdown-button"
+            >
+              Services
+              <div class="w-4 h-4 flex items-center justify-center">
+                <i class="ri-arrow-down-s-line"></i>
+              </div>
+            </button>
+            <div
+              class="mobile-dropdown-menu hidden pl-4 py-2 space-y-2"
+              id="mobile-dropdown-menu"
+            >
+              <a href="#services" class="block text-gray-700 hover:text-primary"
+                >Investment Plans</a
+              >
+              <a href="#services" class="block text-gray-700 hover:text-primary"
+                >Financial Advisory</a
+              >
+              <a href="#services" class="block text-gray-700 hover:text-primary"
+                >Wealth Management</a
+              >
+            </div>
+          </div>
+
+          <a
+            href="#about"
+            class="text-gray-800 hover:text-primary font-medium py-2 border-b border-gray-100"
+            >About Us</a
+          >
+          <a
+            href="#features"
+            class="text-gray-800 hover:text-primary font-medium py-2 border-b border-gray-100"
+            >Features</a
+          >
+          <a
+            href="#contact"
+            class="text-gray-800 hover:text-primary font-medium py-2 border-b border-gray-100"
+            >Contact</a
+          >
+
+          <div class="pt-4">
+            <a
+              href="#contact"
+              class="block w-full bg-primary text-white px-6 py-3 rounded-button font-medium text-center hover:bg-primary/90 transition-colors shadow-md !rounded-button whitespace-nowrap"
+              >Get Started</a
+            >
+          </div>
+        </nav>
+      </div>
+    </div>
+
+    <!-- Overlay -->
+    <div class="overlay" id="overlay"></div>
+
+    <!-- Hero Section -->
+    <section
+      id="home"
+      class="relative pt-24 pb-20 md:pt-32 md:pb-28 overflow-hidden"
+      style="background-image: url('https://readdy.ai/api/search-image?query=modern%20financial%20investment%20platform%20with%20a%20clean%20professional%20aesthetic%2C%20blue%20gradient%20background%20with%20abstract%20geometric%20shapes%20and%20financial%20symbols%2C%20high-quality%20professional%203D%20rendering%2C%20soft%20lighting%2C%20premium%20look%20and%20feel%2C%20right%20side%20has%20clear%20space%20for%20text&width=1920&height=1080&seq=1&orientation=landscape'); background-size: cover; background-position: center;"
+    >
+      <div
+        class="absolute inset-0 bg-gradient-to-r from-primary/90 to-primary/30"
+      ></div>
+      <div class="container mx-auto px-4 relative z-10">
+        <div class="flex flex-col md:flex-row items-center">
+          <div
+            class="w-full md:w-1/2 text-white mb-12 md:mb-0 animate-fade-in visible"
+          >
+            <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold mb-6">
+              Secure Your Financial Future
+            </h1>
+            <p class="text-lg md:text-xl mb-8 opacity-90">
+              Intec Investment Platform offers innovative investment solutions
+              to help you achieve your financial goals with confidence.
+            </p>
+            <div class="flex flex-col sm:flex-row gap-4">
+              <a
+                href="#services"
+                class="bg-white text-primary px-8 py-3 rounded-button font-semibold hover:bg-gray-100 transition-colors shadow-lg !rounded-button whitespace-nowrap text-center"
+                >Explore Plans</a
+              >
+              <a
+                href="#contact"
+                class="bg-transparent border-2 border-white text-white px-8 py-3 rounded-button font-semibold hover:bg-white/10 transition-colors !rounded-button whitespace-nowrap text-center"
+                >Contact Us</a
+              >
+            </div>
+          </div>
+          <div
+            class="w-full md:w-1/2 flex justify-center animate-fade-in visible"
+            style="transition-delay: 0.2s;"
+          >
+            <div class="relative">
+              <div
+                class="bg-white/10 backdrop-blur-sm p-6 rounded-lg border border-white/20 shadow-xl"
+              >
+                <div class="text-white text-center mb-4">
+                  <h3 class="text-xl font-semibold">Investment Calculator</h3>
+                  <p class="text-sm opacity-80">
+                    See how your investment can grow
+                  </p>
+                </div>
+                <div class="space-y-4">
+                  <div>
+                    <label class="block text-white text-sm mb-2"
+                      >Initial Investment</label
+                    >
+                    <div class="relative">
+                      <div
+                        class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none"
+                      >
+                        <span class="text-gray-200">₹</span>
+                      </div>
+                      <input
+                        type="text"
+                        id="initial-investment"
+                        class="w-full bg-white/20 border border-white/30 rounded-button py-2 pl-8 pr-3 text-white placeholder-gray-300"
+                        placeholder="10,000"
+                        value="10000"
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <label class="block text-white text-sm mb-2"
+                      >Monthly Contribution</label
+                    >
+                    <div class="relative">
+                      <div
+                        class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none"
+                      >
+                        <span class="text-gray-200">₹</span>
+                      </div>
+                      <input
+                        type="text"
+                        id="monthly-contribution"
+                        class="w-full bg-white/20 border border-white/30 rounded-button py-2 pl-8 pr-3 text-white placeholder-gray-300"
+                        placeholder="1,000"
+                        value="1000"
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <label class="block text-white text-sm mb-2"
+                      >Investment Period (Years)</label
+                    >
+                    <input
+                      type="range"
+                      id="investment-period"
+                      min="1"
+                      max="30"
+                      value="5"
+                      class="w-full"
+                    />
+                    <div class="flex justify-between text-xs text-white mt-1">
+                      <span>1</span>
+                      <span id="period-value">5</span>
+                      <span>30</span>
+                    </div>
+                  </div>
+                  <div>
+                    <label class="block text-white text-sm mb-2"
+                      >Expected Annual Return (%)</label
+                    >
+                    <input
+                      type="range"
+                      id="annual-return"
+                      min="1"
+                      max="15"
+                      value="8"
+                      class="w-full"
+                    />
+                    <div class="flex justify-between text-xs text-white mt-1">
+                      <span>1%</span>
+                      <span id="return-value">8%</span>
+                      <span>15%</span>
+                    </div>
+                  </div>
+                  <div class="pt-4">
+                    <div class="bg-white/10 rounded-button p-4 text-center">
+                      <p class="text-sm text-white mb-1">
+                        Estimated Future Value
+                      </p>
+                      <h3
+                        class="text-2xl font-bold text-white"
+                        id="future-value"
+                      >
+                        ₹ 76,520
+                      </h3>
+                    </div>
+                  </div>
+                  <button
+                    id="calculate-btn"
+                    class="w-full bg-white text-primary font-semibold py-3 rounded-button hover:bg-gray-100 transition-colors !rounded-button whitespace-nowrap"
+                  >
+                    Calculate
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="py-20 bg-white">
+      <div class="container mx-auto px-4">
+        <div class="text-center mb-16 animate-fade-in">
+          <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+            Why Choose Intec Investment Platform
+          </h2>
+          <p class="text-lg text-gray-600 max-w-3xl mx-auto">
+            We provide comprehensive investment solutions with cutting-edge
+            technology to help you make informed financial decisions.
+          </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <!-- Feature 1 -->
+          <div
+            class="bg-white p-6 rounded-lg shadow-md border border-gray-100 service-card animate-fade-in"
+          >
+            <div
+              class="w-14 h-14 bg-primary/10 rounded-full flex items-center justify-center mb-5"
+            >
+              <i class="ri-shield-check-line text-2xl text-primary"></i>
+            </div>
+            <h3 class="text-xl font-semibold text-gray-900 mb-3">
+              Secure Investments
+            </h3>
+            <p class="text-gray-600">
+              Our platform implements bank-level security protocols to ensure
+              your investments and personal data are always protected.
+            </p>
+          </div>
+
+          <!-- Feature 2 -->
+          <div
+            class="bg-white p-6 rounded-lg shadow-md border border-gray-100 service-card animate-fade-in"
+            style="transition-delay: 0.1s;"
+          >
+            <div
+              class="w-14 h-14 bg-primary/10 rounded-full flex items-center justify-center mb-5"
+            >
+              <i class="ri-line-chart-line text-2xl text-primary"></i>
+            </div>
+            <h3 class="text-xl font-semibold text-gray-900 mb-3">
+              High Returns
+            </h3>
+            <p class="text-gray-600">
+              Our investment strategies are designed to maximize returns while
+              managing risk, helping your portfolio grow consistently over time.
+            </p>
+          </div>
+
+          <!-- Feature 3 -->
+          <div
+            class="bg-white p-6 rounded-lg shadow-md border border-gray-100 service-card animate-fade-in"
+            style="transition-delay: 0.2s;"
+          >
+            <div
+              class="w-14 h-14 bg-primary/10 rounded-full flex items-center justify-center mb-5"
+            >
+              <i class="ri-customer-service-2-line text-2xl text-primary"></i>
+            </div>
+            <h3 class="text-xl font-semibold text-gray-900 mb-3">
+              Expert Support
+            </h3>
+            <p class="text-gray-600">
+              Our team of financial advisors is available to provide
+              personalized guidance and answer any questions about your
+              investments.
+            </p>
+          </div>
+
+          <!-- Feature 4 -->
+          <div
+            class="bg-white p-6 rounded-lg shadow-md border border-gray-100 service-card animate-fade-in"
+            style="transition-delay: 0.3s;"
+          >
+            <div
+              class="w-14 h-14 bg-primary/10 rounded-full flex items-center justify-center mb-5"
+            >
+              <i class="ri-funds-box-line text-2xl text-primary"></i>
+            </div>
+            <h3 class="text-xl font-semibold text-gray-900 mb-3">
+              Diversified Portfolio
+            </h3>
+            <p class="text-gray-600">
+              Spread your investments across multiple asset classes to minimize
+              risk and optimize returns based on your financial goals.
+            </p>
+          </div>
+
+          <!-- Feature 5 -->
+          <div
+            class="bg-white p-6 rounded-lg shadow-md border border-gray-100 service-card animate-fade-in"
+            style="transition-delay: 0.4s;"
+          >
+            <div
+              class="w-14 h-14 bg-primary/10 rounded-full flex items-center justify-center mb-5"
+            >
+              <i class="ri-smartphone-line text-2xl text-primary"></i>
+            </div>
+            <h3 class="text-xl font-semibold text-gray-900 mb-3">
+              Mobile Access
+            </h3>
+            <p class="text-gray-600">
+              Monitor and manage your investments anytime, anywhere with our
+              user-friendly mobile application and responsive web platform.
+            </p>
+          </div>
+
+          <!-- Feature 6 -->
+          <div
+            class="bg-white p-6 rounded-lg shadow-md border border-gray-100 service-card animate-fade-in"
+            style="transition-delay: 0.5s;"
+          >
+            <div
+              class="w-14 h-14 bg-primary/10 rounded-full flex items-center justify-center mb-5"
+            >
+              <i class="ri-bank-card-line text-2xl text-primary"></i>
+            </div>
+            <h3 class="text-xl font-semibold text-gray-900 mb-3">
+              Flexible Payments
+            </h3>
+            <p class="text-gray-600">
+              Multiple payment options available for deposits and withdrawals,
+              making it convenient to manage your investment funds.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Services Section -->
+    <section id="services" class="py-20 bg-gray-50">
+      <div class="container mx-auto px-4">
+        <div class="text-center mb-16 animate-fade-in">
+          <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+            Our Investment Services
+          </h2>
+          <p class="text-lg text-gray-600 max-w-3xl mx-auto">
+            Discover our range of investment options tailored to meet your
+            financial goals and risk appetite.
+          </p>
+        </div>
+
+        <!-- Tabs -->
+        <div class="mb-10 flex justify-center animate-fade-in">
+          <div class="inline-flex bg-gray-200 p-1 rounded-full">
+            <button
+              class="tab-button px-6 py-2 rounded-full text-gray-700 font-medium transition-colors whitespace-nowrap active"
+              data-tab="tab1"
+            >
+              Investment Plans
+            </button>
+            <button
+              class="tab-button px-6 py-2 rounded-full text-gray-700 font-medium transition-colors whitespace-nowrap"
+              data-tab="tab2"
+            >
+              Financial Advisory
+            </button>
+            <button
+              class="tab-button px-6 py-2 rounded-full text-gray-700 font-medium transition-colors whitespace-nowrap"
+              data-tab="tab3"
+            >
+              Wealth Management
+            </button>
+          </div>
+        </div>
+
+        <!-- Tab Content -->
+        <div class="tab-content active" id="tab1">
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <!-- Plan 1 -->
+            <div
+              class="bg-white rounded-lg shadow-md overflow-hidden border border-gray-100 transition-transform hover:-translate-y-1"
+            >
+              <div class="bg-primary/10 p-6">
+                <h3 class="text-2xl font-bold text-primary">Starter Plan</h3>
+                <div class="mt-4 flex items-end">
+                  <span class="text-4xl font-bold text-gray-900">8%</span>
+                  <span class="text-gray-600 ml-2">Annual Returns</span>
+                </div>
+                <p class="mt-2 text-sm text-gray-600">
+                  Minimum investment: ₹ 5,000
+                </p>
+              </div>
+              <div class="p-6">
+                <ul class="space-y-3">
+                  <li class="flex items-start">
+                    <div
+                      class="w-5 h-5 flex items-center justify-center mt-0.5 mr-3 text-primary"
+                    >
+                      <i class="ri-check-line"></i>
+                    </div>
+                    <span class="text-gray-700"
+                      >Low-risk investment options</span
+                    >
+                  </li>
+                  <li class="flex items-start">
+                    <div
+                      class="w-5 h-5 flex items-center justify-center mt-0.5 mr-3 text-primary"
+                    >
+                      <i class="ri-check-line"></i>
+                    </div>
+                    <span class="text-gray-700"
+                      >Quarterly performance reports</span
+                    >
+                  </li>
+                  <li class="flex items-start">
+                    <div
+                      class="w-5 h-5 flex items-center justify-center mt-0.5 mr-3 text-primary"
+                    >
+                      <i class="ri-check-line"></i>
+                    </div>
+                    <span class="text-gray-700">Email support</span>
+                  </li>
+                  <li class="flex items-start">
+                    <div
+                      class="w-5 h-5 flex items-center justify-center mt-0.5 mr-3 text-gray-300"
+                    >
+                      <i class="ri-close-line"></i>
+                    </div>
+                    <span class="text-gray-500"
+                      >Dedicated financial advisor</span
+                    >
+                  </li>
+                  <li class="flex items-start">
+                    <div
+                      class="w-5 h-5 flex items-center justify-center mt-0.5 mr-3 text-gray-300"
+                    >
+                      <i class="ri-close-line"></i>
+                    </div>
+                    <span class="text-gray-500"
+                      >Tax optimization strategies</span
+                    >
+                  </li>
+                </ul>
+                <div class="mt-6">
+                  <a
+                    href="#contact"
+                    class="block w-full bg-primary text-white text-center py-3 rounded-button font-medium hover:bg-primary/90 transition-colors !rounded-button whitespace-nowrap"
+                    >Get Started</a
+                  >
+                </div>
+              </div>
+            </div>
+
+            <!-- Plan 2 -->
+            <div
+              class="bg-white rounded-lg shadow-xl overflow-hidden border-2 border-primary transform scale-105 z-10"
+            >
+              <div class="bg-primary text-white p-6 relative">
+                <div
+                  class="absolute top-0 right-0 bg-secondary text-white text-xs font-bold px-3 py-1 transform translate-x-2 -translate-y-0 rotate-45"
+                >
+                  Popular
+                </div>
+                <h3 class="text-2xl font-bold">Growth Plan</h3>
+                <div class="mt-4 flex items-end">
+                  <span class="text-4xl font-bold">12%</span>
+                  <span class="ml-2 opacity-90">Annual Returns</span>
+                </div>
+                <p class="mt-2 text-sm opacity-90">
+                  Minimum investment: ₹ 25,000
+                </p>
+              </div>
+              <div class="p-6">
+                <ul class="space-y-3">
+                  <li class="flex items-start">
+                    <div
+                      class="w-5 h-5 flex items-center justify-center mt-0.5 mr-3 text-primary"
+                    >
+                      <i class="ri-check-line"></i>
+                    </div>
+                    <span class="text-gray-700"
+                      >Balanced risk-return portfolio</span
+                    >
+                  </li>
+                  <li class="flex items-start">
+                    <div
+                      class="w-5 h-5 flex items-center justify-center mt-0.5 mr-3 text-primary"
+                    >
+                      <i class="ri-check-line"></i>
+                    </div>
+                    <span class="text-gray-700"
+                      >Monthly performance reports</span
+                    >
+                  </li>
+                  <li class="flex items-start">
+                    <div
+                      class="w-5 h-5 flex items-center justify-center mt-0.5 mr-3 text-primary"
+                    >
+                      <i class="ri-check-line"></i>
+                    </div>
+                    <span class="text-gray-700"
+                      >Priority email & phone support</span
+                    >
+                  </li>
+                  <li class="flex items-start">
+                    <div
+                      class="w-5 h-5 flex items-center justify-center mt-0.5 mr-3 text-primary"
+                    >
+                      <i class="ri-check-line"></i>
+                    </div>
+                    <span class="text-gray-700"
+                      >Quarterly advisor consultation</span
+                    >
+                  </li>
+                  <li class="flex items-start">
+                    <div
+                      class="w-5 h-5 flex items-center justify-center mt-0.5 mr-3 text-gray-300"
+                    >
+                      <i class="ri-close-line"></i>
+                    </div>
+                    <span class="text-gray-500"
+                      >Tax optimization strategies</span
+                    >
+                  </li>
+                </ul>
+                <div class="mt-6">
+                  <a
+                    href="#contact"
+                    class="block w-full bg-primary text-white text-center py-3 rounded-button font-medium hover:bg-primary/90 transition-colors shadow-md !rounded-button whitespace-nowrap"
+                    >Get Started</a
+                  >
+                </div>
+              </div>
+            </div>
+
+            <!-- Plan 3 -->
+            <div
+              class="bg-white rounded-lg shadow-md overflow-hidden border border-gray-100 transition-transform hover:-translate-y-1"
+            >
+              <div class="bg-primary/10 p-6">
+                <h3 class="text-2xl font-bold text-primary">Premium Plan</h3>
+                <div class="mt-4 flex items-end">
+                  <span class="text-4xl font-bold text-gray-900">15%</span>
+                  <span class="text-gray-600 ml-2">Annual Returns</span>
+                </div>
+                <p class="mt-2 text-sm text-gray-600">
+                  Minimum investment: ₹ 1,00,000
+                </p>
+              </div>
+              <div class="p-6">
+                <ul class="space-y-3">
+                  <li class="flex items-start">
+                    <div
+                      class="w-5 h-5 flex items-center justify-center mt-0.5 mr-3 text-primary"
+                    >
+                      <i class="ri-check-line"></i>
+                    </div>
+                    <span class="text-gray-700"
+                      >High-growth investment strategy</span
+                    >
+                  </li>
+                  <li class="flex items-start">
+                    <div
+                      class="w-5 h-5 flex items-center justify-center mt-0.5 mr-3 text-primary"
+                    >
+                      <i class="ri-check-line"></i>
+                    </div>
+                    <span class="text-gray-700"
+                      >Weekly performance updates</span
+                    >
+                  </li>
+                  <li class="flex items-start">
+                    <div
+                      class="w-5 h-5 flex items-center justify-center mt-0.5 mr-3 text-primary"
+                    >
+                      <i class="ri-check-line"></i>
+                    </div>
+                    <span class="text-gray-700">24/7 priority support</span>
+                  </li>
+                  <li class="flex items-start">
+                    <div
+                      class="w-5 h-5 flex items-center justify-center mt-0.5 mr-3 text-primary"
+                    >
+                      <i class="ri-check-line"></i>
+                    </div>
+                    <span class="text-gray-700"
+                      >Dedicated financial advisor</span
+                    >
+                  </li>
+                  <li class="flex items-start">
+                    <div
+                      class="w-5 h-5 flex items-center justify-center mt-0.5 mr-3 text-primary"
+                    >
+                      <i class="ri-check-line"></i>
+                    </div>
+                    <span class="text-gray-700"
+                      >Tax optimization strategies</span
+                    >
+                  </li>
+                </ul>
+                <div class="mt-6">
+                  <a
+                    href="#contact"
+                    class="block w-full bg-primary text-white text-center py-3 rounded-button font-medium hover:bg-primary/90 transition-colors !rounded-button whitespace-nowrap"
+                    >Get Started</a
+                  >
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="tab-content" id="tab2">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <!-- Advisory Service 1 -->
+            <div
+              class="bg-white rounded-lg shadow-md p-6 border border-gray-100 transition-transform hover:-translate-y-1"
+            >
+              <div
+                class="w-14 h-14 bg-primary/10 rounded-full flex items-center justify-center mb-5"
+              >
+                <i class="ri-user-settings-line text-2xl text-primary"></i>
+              </div>
+              <h3 class="text-xl font-semibold text-gray-900 mb-3">
+                Personal Financial Planning
+              </h3>
+              <p class="text-gray-600 mb-4">
+                Comprehensive financial planning tailored to your personal
+                goals, income, and lifestyle needs.
+              </p>
+              <ul class="space-y-2 mb-6">
+                <li class="flex items-start">
+                  <div
+                    class="w-5 h-5 flex items-center justify-center mt-0.5 mr-3 text-primary"
+                  >
+                    <i class="ri-check-line"></i>
+                  </div>
+                  <span class="text-gray-700">Retirement planning</span>
+                </li>
+                <li class="flex items-start">
+                  <div
+                    class="w-5 h-5 flex items-center justify-center mt-0.5 mr-3 text-primary"
+                  >
+                    <i class="ri-check-line"></i>
+                  </div>
+                  <span class="text-gray-700"
+                    >Education funding strategies</span
+                  >
+                </li>
+                <li class="flex items-start">
+                  <div
+                    class="w-5 h-5 flex items-center justify-center mt-0.5 mr-3 text-primary"
+                  >
+                    <i class="ri-check-line"></i>
+                  </div>
+                  <span class="text-gray-700">Emergency fund planning</span>
+                </li>
+              </ul>
+              <a
+                href="#contact"
+                class="inline-block bg-primary text-white px-6 py-2 rounded-button font-medium hover:bg-primary/90 transition-colors !rounded-button whitespace-nowrap"
+                >Learn More</a
+              >
+            </div>
+
+            <!-- Advisory Service 2 -->
+            <div
+              class="bg-white rounded-lg shadow-md p-6 border border-gray-100 transition-transform hover:-translate-y-1"
+            >
+              <div
+                class="w-14 h-14 bg-primary/10 rounded-full flex items-center justify-center mb-5"
+              >
+                <i class="ri-building-line text-2xl text-primary"></i>
+              </div>
+              <h3 class="text-xl font-semibold text-gray-900 mb-3">
+                Corporate Financial Advisory
+              </h3>
+              <p class="text-gray-600 mb-4">
+                Strategic financial guidance for businesses to optimize capital
+                structure and investment decisions.
+              </p>
+              <ul class="space-y-2 mb-6">
+                <li class="flex items-start">
+                  <div
+                    class="w-5 h-5 flex items-center justify-center mt-0.5 mr-3 text-primary"
+                  >
+                    <i class="ri-check-line"></i>
+                  </div>
+                  <span class="text-gray-700">Capital raising strategies</span>
+                </li>
+                <li class="flex items-start">
+                  <div
+                    class="w-5 h-5 flex items-center justify-center mt-0.5 mr-3 text-primary"
+                  >
+                    <i class="ri-check-line"></i>
+                  </div>
+                  <span class="text-gray-700"
+                    >Mergers & acquisitions advisory</span
+                  >
+                </li>
+                <li class="flex items-start">
+                  <div
+                    class="w-5 h-5 flex items-center justify-center mt-0.5 mr-3 text-primary"
+                  >
+                    <i class="ri-check-line"></i>
+                  </div>
+                  <span class="text-gray-700">Financial restructuring</span>
+                </li>
+              </ul>
+              <a
+                href="#contact"
+                class="inline-block bg-primary text-white px-6 py-2 rounded-button font-medium hover:bg-primary/90 transition-colors !rounded-button whitespace-nowrap"
+                >Learn More</a
+              >
+            </div>
+
+            <!-- Advisory Service 3 -->
+            <div
+              class="bg-white rounded-lg shadow-md p-6 border border-gray-100 transition-transform hover:-translate-y-1"
+            >
+              <div
+                class="w-14 h-14 bg-primary/10 rounded-full flex items-center justify-center mb-5"
+              >
+                <i class="ri-pie-chart-line text-2xl text-primary"></i>
+              </div>
+              <h3 class="text-xl font-semibold text-gray-900 mb-3">
+                Investment Strategy Consultation
+              </h3>
+              <p class="text-gray-600 mb-4">
+                Expert guidance on investment strategies aligned with your risk
+                tolerance and financial objectives.
+              </p>
+              <ul class="space-y-2 mb-6">
+                <li class="flex items-start">
+                  <div
+                    class="w-5 h-5 flex items-center justify-center mt-0.5 mr-3 text-primary"
+                  >
+                    <i class="ri-check-line"></i>
+                  </div>
+                  <span class="text-gray-700"
+                    >Asset allocation optimization</span
+                  >
+                </li>
+                <li class="flex items-start">
+                  <div
+                    class="w-5 h-5 flex items-center justify-center mt-0.5 mr-3 text-primary"
+                  >
+                    <i class="ri-check-line"></i>
+                  </div>
+                  <span class="text-gray-700">Portfolio diversification</span>
+                </li>
+                <li class="flex items-start">
+                  <div
+                    class="w-5 h-5 flex items-center justify-center mt-0.5 mr-3 text-primary"
+                  >
+                    <i class="ri-check-line"></i>
+                  </div>
+                  <span class="text-gray-700">Risk management strategies</span>
+                </li>
+              </ul>
+              <a
+                href="#contact"
+                class="inline-block bg-primary text-white px-6 py-2 rounded-button font-medium hover:bg-primary/90 transition-colors !rounded-button whitespace-nowrap"
+                >Learn More</a
+              >
+            </div>
+
+            <!-- Advisory Service 4 -->
+            <div
+              class="bg-white rounded-lg shadow-md p-6 border border-gray-100 transition-transform hover:-translate-y-1"
+            >
+              <div
+                class="w-14 h-14 bg-primary/10 rounded-full flex items-center justify-center mb-5"
+              >
+                <i class="ri-bank-line text-2xl text-primary"></i>
+              </div>
+              <h3 class="text-xl font-semibold text-gray-900 mb-3">
+                Tax & Estate Planning
+              </h3>
+              <p class="text-gray-600 mb-4">
+                Comprehensive tax optimization and estate planning services to
+                preserve and transfer wealth efficiently.
+              </p>
+              <ul class="space-y-2 mb-6">
+                <li class="flex items-start">
+                  <div
+                    class="w-5 h-5 flex items-center justify-center mt-0.5 mr-3 text-primary"
+                  >
+                    <i class="ri-check-line"></i>
+                  </div>
+                  <span class="text-gray-700"
+                    >Tax-efficient investment strategies</span
+                  >
+                </li>
+                <li class="flex items-start">
+                  <div
+                    class="w-5 h-5 flex items-center justify-center mt-0.5 mr-3 text-primary"
+                  >
+                    <i class="ri-check-line"></i>
+                  </div>
+                  <span class="text-gray-700"
+                    >Estate & succession planning</span
+                  >
+                </li>
+                <li class="flex items-start">
+                  <div
+                    class="w-5 h-5 flex items-center justify-center mt-0.5 mr-3 text-primary"
+                  >
+                    <i class="ri-check-line"></i>
+                  </div>
+                  <span class="text-gray-700">Trust & will advisory</span>
+                </li>
+              </ul>
+              <a
+                href="#contact"
+                class="inline-block bg-primary text-white px-6 py-2 rounded-button font-medium hover:bg-primary/90 transition-colors !rounded-button whitespace-nowrap"
+                >Learn More</a
+              >
+            </div>
+          </div>
+        </div>
+
+        <div class="tab-content" id="tab3">
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div class="lg:col-span-1">
+              <div
+                class="bg-white rounded-lg shadow-md p-6 border border-gray-100 h-full"
+              >
+                <h3 class="text-2xl font-semibold text-gray-900 mb-4">
+                  Wealth Management Solutions
+                </h3>
+                <p class="text-gray-600 mb-6">
+                  Our comprehensive wealth management services are designed to
+                  preserve and grow your assets while providing personalized
+                  strategies for your unique financial situation.
+                </p>
+                <div class="space-y-4">
+                  <div class="flex items-center">
+                    <div
+                      class="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center mr-4"
+                    >
+                      <i class="ri-shield-star-line text-xl text-primary"></i>
+                    </div>
+                    <div>
+                      <h4 class="font-medium text-gray-900">
+                        Asset Protection
+                      </h4>
+                      <p class="text-sm text-gray-600">
+                        Safeguard your wealth against market volatility
+                      </p>
+                    </div>
+                  </div>
+                  <div class="flex items-center">
+                    <div
+                      class="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center mr-4"
+                    >
+                      <i class="ri-funds-line text-xl text-primary"></i>
+                    </div>
+                    <div>
+                      <h4 class="font-medium text-gray-900">
+                        Portfolio Management
+                      </h4>
+                      <p class="text-sm text-gray-600">
+                        Strategic asset allocation and rebalancing
+                      </p>
+                    </div>
+                  </div>
+                  <div class="flex items-center">
+                    <div
+                      class="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center mr-4"
+                    >
+                      <i class="ri-hand-coin-line text-xl text-primary"></i>
+                    </div>
+                    <div>
+                      <h4 class="font-medium text-gray-900">Legacy Planning</h4>
+                      <p class="text-sm text-gray-600">
+                        Ensure your wealth benefits future generations
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                <div class="mt-8">
+                  <a
+                    href="#contact"
+                    class="inline-block bg-primary text-white px-6 py-2 rounded-button font-medium hover:bg-primary/90 transition-colors !rounded-button whitespace-nowrap"
+                    >Schedule Consultation</a
+                  >
+                </div>
+              </div>
+            </div>
+
+            <div class="lg:col-span-2">
+              <div
+                class="bg-white rounded-lg shadow-md p-6 border border-gray-100 h-full"
+              >
+                <h3 class="text-xl font-semibold text-gray-900 mb-6">
+                  Performance Comparison
+                </h3>
+                <div id="performance-chart" class="w-full h-80"></div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-8">
+                  <div class="bg-gray-50 p-4 rounded-lg">
+                    <h4 class="text-sm font-medium text-gray-500 mb-1">
+                      Conservative Portfolio
+                    </h4>
+                    <p class="text-2xl font-bold text-gray-900">+8.2%</p>
+                    <p class="text-sm text-gray-600">Annual Return</p>
+                  </div>
+                  <div class="bg-gray-50 p-4 rounded-lg">
+                    <h4 class="text-sm font-medium text-gray-500 mb-1">
+                      Balanced Portfolio
+                    </h4>
+                    <p class="text-2xl font-bold text-gray-900">+12.5%</p>
+                    <p class="text-sm text-gray-600">Annual Return</p>
+                  </div>
+                  <div class="bg-gray-50 p-4 rounded-lg">
+                    <h4 class="text-sm font-medium text-gray-500 mb-1">
+                      Growth Portfolio
+                    </h4>
+                    <p class="text-2xl font-bold text-gray-900">+16.8%</p>
+                    <p class="text-sm text-gray-600">Annual Return</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="py-20 bg-white">
+      <div class="container mx-auto px-4">
+        <div class="flex flex-col lg:flex-row items-center gap-12">
+          <div class="w-full lg:w-1/2 animate-fade-in">
+            <div class="relative">
+              <img
+                src="https://readdy.ai/api/search-image?query=professional%20financial%20team%20in%20modern%20office%20setting%2C%20diverse%20group%20of%20experts%20discussing%20investment%20strategies%2C%20clean%20corporate%20environment%20with%20glass%20walls%20and%20city%20view%2C%20premium%20financial%20district%20office%20space%2C%20high-quality%20professional%20photo&width=600&height=400&seq=2&orientation=landscape"
+                alt="About Intec Investment"
+                class="rounded-lg shadow-xl w-full object-cover"
+              />
+              <div
+                class="absolute -bottom-6 -right-6 bg-white p-4 rounded-lg shadow-lg"
+              >
+                <div class="flex items-center gap-4">
+                  <div
+                    class="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center"
+                  >
+                    <i class="ri-award-line text-2xl text-primary"></i>
+                  </div>
+                  <div>
+                    <p class="text-sm text-gray-600">Trusted by</p>
+                    <p class="text-xl font-bold text-gray-900">
+                      10,000+ Investors
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div
+            class="w-full lg:w-1/2 animate-fade-in"
+            style="transition-delay: 0.2s;"
+          >
+            <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-6">
+              About Intec Investment Platform
+            </h2>
+            <p class="text-lg text-gray-600 mb-6">
+              Intec Investment Platform is a leading financial services company
+              dedicated to helping individuals and businesses achieve their
+              financial goals through innovative investment solutions.
+            </p>
+            <p class="text-lg text-gray-600 mb-8">
+              With over 15 years of experience in the financial industry, our
+              team of experts combines deep market knowledge with cutting-edge
+              technology to deliver exceptional investment performance and
+              personalized service.
+            </p>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+              <div class="flex items-start">
+                <div
+                  class="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center mr-4 mt-1"
+                >
+                  <i class="ri-team-line text-xl text-primary"></i>
+                </div>
+                <div>
+                  <h4 class="text-lg font-semibold text-gray-900 mb-1">
+                    Expert Team
+                  </h4>
+                  <p class="text-gray-600">
+                    Our financial advisors have decades of combined experience
+                    in investment management.
+                  </p>
+                </div>
+              </div>
+              <div class="flex items-start">
+                <div
+                  class="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center mr-4 mt-1"
+                >
+                  <i class="ri-secure-payment-line text-xl text-primary"></i>
+                </div>
+                <div>
+                  <h4 class="text-lg font-semibold text-gray-900 mb-1">
+                    Regulatory Compliance
+                  </h4>
+                  <p class="text-gray-600">
+                    We adhere to all regulatory requirements to ensure your
+                    investments are secure.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div class="flex flex-col sm:flex-row gap-4">
+              <a
+                href="#contact"
+                class="bg-primary text-white px-8 py-3 rounded-button font-medium hover:bg-primary/90 transition-colors shadow-md !rounded-button whitespace-nowrap text-center"
+                >Contact Us</a
+              >
+              <a
+                href="#services"
+                class="bg-white border border-gray-300 text-gray-700 px-8 py-3 rounded-button font-medium hover:bg-gray-50 transition-colors !rounded-button whitespace-nowrap text-center"
+                >Our Services</a
+              >
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="py-16 bg-primary">
+      <div class="container mx-auto px-4">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div class="text-center animate-fade-in">
+            <div
+              class="text-4xl md:text-5xl font-bold text-white mb-2"
+              id="stat1"
+            >
+              ₹ 500M+
+            </div>
+            <p class="text-white/80">Assets Under Management</p>
+          </div>
+          <div
+            class="text-center animate-fade-in"
+            style="transition-delay: 0.1s;"
+          >
+            <div
+              class="text-4xl md:text-5xl font-bold text-white mb-2"
+              id="stat2"
+            >
+              10,000+
+            </div>
+            <p class="text-white/80">Happy Investors</p>
+          </div>
+          <div
+            class="text-center animate-fade-in"
+            style="transition-delay: 0.2s;"
+          >
+            <div
+              class="text-4xl md:text-5xl font-bold text-white mb-2"
+              id="stat3"
+            >
+              15+
+            </div>
+            <p class="text-white/80">Years of Experience</p>
+          </div>
+          <div
+            class="text-center animate-fade-in"
+            style="transition-delay: 0.3s;"
+          >
+            <div
+              class="text-4xl md:text-5xl font-bold text-white mb-2"
+              id="stat4"
+            >
+              98%
+            </div>
+            <p class="text-white/80">Client Satisfaction</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Testimonials Section -->
+    <section class="py-20 bg-gray-50">
+      <div class="container mx-auto px-4">
+        <div class="text-center mb-16 animate-fade-in">
+          <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+            What Our Clients Say
+          </h2>
+          <p class="text-lg text-gray-600 max-w-3xl mx-auto">
+            Hear from our satisfied clients about their experience with Intec
+            Investment Platform.
+          </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <!-- Testimonial 1 -->
+          <div
+            class="bg-white p-6 rounded-lg shadow-md border border-gray-100 animate-fade-in"
+          >
+            <div class="flex text-primary mb-4">
+              <i class="ri-star-fill"></i>
+              <i class="ri-star-fill"></i>
+              <i class="ri-star-fill"></i>
+              <i class="ri-star-fill"></i>
+              <i class="ri-star-fill"></i>
+            </div>
+            <p class="text-gray-700 mb-6">
+              "Intec Investment Platform has transformed my approach to
+              investing. Their expert advisors helped me create a diversified
+              portfolio that consistently outperforms the market. I've been able
+              to achieve my retirement goals much faster than expected."
+            </p>
+            <div class="flex items-center">
+              <div
+                class="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center mr-4"
+              >
+                <i class="ri-user-3-line text-xl text-gray-500"></i>
+              </div>
+              <div>
+                <h4 class="font-semibold text-gray-900">Rajesh Sharma</h4>
+                <p class="text-sm text-gray-600">Business Owner, Mumbai</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Testimonial 2 -->
+          <div
+            class="bg-white p-6 rounded-lg shadow-md border border-gray-100 animate-fade-in"
+            style="transition-delay: 0.1s;"
+          >
+            <div class="flex text-primary mb-4">
+              <i class="ri-star-fill"></i>
+              <i class="ri-star-fill"></i>
+              <i class="ri-star-fill"></i>
+              <i class="ri-star-fill"></i>
+              <i class="ri-star-fill"></i>
+            </div>
+            <p class="text-gray-700 mb-6">
+              "As a first-time investor, I was nervous about where to put my
+              money. The team at Intec guided me through every step, explaining
+              complex concepts in simple terms. Their Growth Plan has given me
+              returns I never thought possible with minimal stress."
+            </p>
+            <div class="flex items-center">
+              <div
+                class="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center mr-4"
+              >
+                <i class="ri-user-3-line text-xl text-gray-500"></i>
+              </div>
+              <div>
+                <h4 class="font-semibold text-gray-900">Priya Patel</h4>
+                <p class="text-sm text-gray-600">
+                  Software Engineer, Bangalore
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Testimonial 3 -->
+          <div
+            class="bg-white p-6 rounded-lg shadow-md border border-gray-100 animate-fade-in"
+            style="transition-delay: 0.2s;"
+          >
+            <div class="flex text-primary mb-4">
+              <i class="ri-star-fill"></i>
+              <i class="ri-star-fill"></i>
+              <i class="ri-star-fill"></i>
+              <i class="ri-star-fill"></i>
+              <i class="ri-star-half-fill"></i>
+            </div>
+            <p class="text-gray-700 mb-6">
+              "Our company needed a reliable partner to manage our corporate
+              investments. Intec's corporate advisory team developed a
+              customized strategy that aligned perfectly with our business
+              goals. Their transparent reporting and consistent performance have
+              made them an invaluable partner."
+            </p>
+            <div class="flex items-center">
+              <div
+                class="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center mr-4"
+              >
+                <i class="ri-user-3-line text-xl text-gray-500"></i>
+              </div>
+              <div>
+                <h4 class="font-semibold text-gray-900">Vikram Mehta</h4>
+                <p class="text-sm text-gray-600">CFO, Tech Solutions Ltd</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="py-20 bg-white">
+      <div class="container mx-auto px-4">
+        <div class="bg-primary rounded-xl overflow-hidden shadow-xl">
+          <div class="flex flex-col md:flex-row">
+            <div class="w-full md:w-1/2 p-8 md:p-12 lg:p-16">
+              <h2 class="text-3xl md:text-4xl font-bold text-white mb-6">
+                Ready to Start Your Investment Journey?
+              </h2>
+              <p class="text-white/90 text-lg mb-8">
+                Join thousands of satisfied investors who have achieved their
+                financial goals with Intec Investment Platform. Our experts are
+                ready to help you build a personalized investment strategy.
+              </p>
+              <div class="flex flex-col sm:flex-row gap-4">
+                <a
+                  href="#contact"
+                  class="bg-white text-primary px-8 py-3 rounded-button font-semibold hover:bg-gray-100 transition-colors shadow-lg !rounded-button whitespace-nowrap text-center"
+                  >Get Started Today</a
+                >
+                <a
+                  href="#services"
+                  class="bg-transparent border-2 border-white text-white px-8 py-3 rounded-button font-semibold hover:bg-white/10 transition-colors !rounded-button whitespace-nowrap text-center"
+                  >Explore Plans</a
+                >
+              </div>
+            </div>
+            <div
+              class="w-full md:w-1/2 bg-primary"
+              style="background-image: url('https://readdy.ai/api/search-image?query=professional%20financial%20advisor%20meeting%20with%20client%2C%20discussing%20investment%20portfolio%20on%20tablet%2C%20modern%20office%20setting%20with%20city%20view%2C%20warm%20lighting%2C%20premium%20business%20environment%2C%20high-quality%20professional%20photo&width=600&height=600&seq=3&orientation=squarish'); background-size: cover; background-position: center;"
+            ></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section class="py-20 bg-gray-50">
+      <div class="container mx-auto px-4">
+        <div class="text-center mb-16 animate-fade-in">
+          <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+            Frequently Asked Questions
+          </h2>
+          <p class="text-lg text-gray-600 max-w-3xl mx-auto">
+            Find answers to common questions about our investment platform and
+            services.
+          </p>
+        </div>
+
+        <div class="max-w-3xl mx-auto">
+          <div class="space-y-6">
+            <!-- FAQ Item 1 -->
+            <div
+              class="bg-white rounded-lg shadow-sm border border-gray-100 overflow-hidden animate-fade-in"
+            >
+              <button
+                class="faq-button w-full flex items-center justify-between p-6 text-left"
+                data-faq="faq1"
+              >
+                <span class="text-lg font-medium text-gray-900"
+                  >What is the minimum investment amount?</span
+                >
+                <div
+                  class="w-6 h-6 flex items-center justify-center text-primary transition-transform duration-200"
+                >
+                  <i class="ri-add-line text-xl faq-icon"></i>
+                </div>
+              </button>
+              <div class="faq-answer px-6 pb-6 hidden" id="faq1">
+                <p class="text-gray-600">
+                  The minimum investment amount varies by plan. Our Starter Plan
+                  begins at ₹5,000, the Growth Plan at ₹25,000, and the Premium
+                  Plan at ₹1,00,000. We offer flexibility to increase your
+                  investment over time as your financial situation evolves.
+                </p>
+              </div>
+            </div>
+
+            <!-- FAQ Item 2 -->
+            <div
+              class="bg-white rounded-lg shadow-sm border border-gray-100 overflow-hidden animate-fade-in"
+              style="transition-delay: 0.1s;"
+            >
+              <button
+                class="faq-button w-full flex items-center justify-between p-6 text-left"
+                data-faq="faq2"
+              >
+                <span class="text-lg font-medium text-gray-900"
+                  >How are returns calculated and distributed?</span
+                >
+                <div
+                  class="w-6 h-6 flex items-center justify-center text-primary transition-transform duration-200"
+                >
+                  <i class="ri-add-line text-xl faq-icon"></i>
+                </div>
+              </button>
+              <div class="faq-answer px-6 pb-6 hidden" id="faq2">
+                <p class="text-gray-600">
+                  Returns are calculated based on the performance of your
+                  investment portfolio, which varies according to market
+                  conditions and your chosen investment strategy. Distributions
+                  can be set up as regular income payments or reinvested for
+                  compound growth. We provide detailed performance reports so
+                  you can track your investment growth.
+                </p>
+              </div>
+            </div>
+
+            <!-- FAQ Item 3 -->
+            <div
+              class="bg-white rounded-lg shadow-sm border border-gray-100 overflow-hidden animate-fade-in"
+              style="transition-delay: 0.2s;"
+            >
+              <button
+                class="faq-button w-full flex items-center justify-between p-6 text-left"
+                data-faq="faq3"
+              >
+                <span class="text-lg font-medium text-gray-900"
+                  >Can I withdraw my investment before the term ends?</span
+                >
+                <div
+                  class="w-6 h-6 flex items-center justify-center text-primary transition-transform duration-200"
+                >
+                  <i class="ri-add-line text-xl faq-icon"></i>
+                </div>
+              </button>
+              <div class="faq-answer px-6 pb-6 hidden" id="faq3">
+                <p class="text-gray-600">
+                  Yes, you can withdraw your investment before the term ends.
+                  However, early withdrawals may be subject to exit fees
+                  depending on your investment plan and the timing of the
+                  withdrawal. We recommend discussing your liquidity needs with
+                  your financial advisor to structure your investments
+                  appropriately.
+                </p>
+              </div>
+            </div>
+
+            <!-- FAQ Item 4 -->
+            <div
+              class="bg-white rounded-lg shadow-sm border border-gray-100 overflow-hidden animate-fade-in"
+              style="transition-delay: 0.3s;"
+            >
+              <button
+                class="faq-button w-full flex items-center justify-between p-6 text-left"
+                data-faq="faq4"
+              >
+                <span class="text-lg font-medium text-gray-900"
+                  >How is my investment secured?</span
+                >
+                <div
+                  class="w-6 h-6 flex items-center justify-center text-primary transition-transform duration-200"
+                >
+                  <i class="ri-add-line text-xl faq-icon"></i>
+                </div>
+              </button>
+              <div class="faq-answer px-6 pb-6 hidden" id="faq4">
+                <p class="text-gray-600">
+                  Your investment is secured through a combination of regulatory
+                  compliance, diversification strategies, and risk management
+                  protocols. We are registered with relevant financial
+                  authorities and adhere to strict regulatory guidelines.
+                  Additionally, we implement robust security measures to protect
+                  your personal and financial information.
+                </p>
+              </div>
+            </div>
+
+            <!-- FAQ Item 5 -->
+            <div
+              class="bg-white rounded-lg shadow-sm border border-gray-100 overflow-hidden animate-fade-in"
+              style="transition-delay: 0.4s;"
+            >
+              <button
+                class="faq-button w-full flex items-center justify-between p-6 text-left"
+                data-faq="faq5"
+              >
+                <span class="text-lg font-medium text-gray-900"
+                  >What types of investments are included in your
+                  portfolios?</span
+                >
+                <div
+                  class="w-6 h-6 flex items-center justify-center text-primary transition-transform duration-200"
+                >
+                  <i class="ri-add-line text-xl faq-icon"></i>
+                </div>
+              </button>
+              <div class="faq-answer px-6 pb-6 hidden" id="faq5">
+                <p class="text-gray-600">
+                  Our portfolios include a diverse mix of investment vehicles
+                  such as stocks, bonds, mutual funds, ETFs, and alternative
+                  investments. The specific allocation depends on your chosen
+                  investment plan, risk tolerance, and financial goals. Our
+                  investment team continuously monitors and adjusts portfolios
+                  to optimize performance while managing risk.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="py-20 bg-white">
+      <div class="container mx-auto px-4">
+        <div class="flex flex-col lg:flex-row gap-12">
+          <div class="w-full lg:w-1/2 animate-fade-in">
+            <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-6">
+              Get in Touch
+            </h2>
+            <p class="text-lg text-gray-600 mb-8">
+              Have questions about our investment services? Fill out the form
+              below and our team will get back to you shortly.
+            </p>
+
+            <form id="contact-form" class="space-y-6">
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <label
+                    for="name"
+                    class="block text-sm font-medium text-gray-700 mb-1"
+                    >Full Name</label
+                  >
+                  <input
+                    type="text"
+                    id="name"
+                    name="name"
+                    class="w-full px-4 py-3 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-colors"
+                    placeholder="Your name"
+                  />
+                </div>
+                <div>
+                  <label
+                    for="email"
+                    class="block text-sm font-medium text-gray-700 mb-1"
+                    >Email Address</label
+                  >
+                  <input
+                    type="email"
+                    id="email"
+                    name="email"
+                    class="w-full px-4 py-3 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-colors"
+                    placeholder="Your email"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label
+                  for="phone"
+                  class="block text-sm font-medium text-gray-700 mb-1"
+                  >Phone Number</label
+                >
+                <input
+                  type="tel"
+                  id="phone"
+                  name="phone"
+                  class="w-full px-4 py-3 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-colors"
+                  placeholder="Your phone number"
+                />
+              </div>
+
+              <div>
+                <label
+                  for="investment"
+                  class="block text-sm font-medium text-gray-700 mb-1"
+                  >Investment Interest</label
+                >
+                <div class="relative">
+                  <select
+                    id="investment"
+                    name="investment"
+                    class="w-full px-4 py-3 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-colors appearance-none pr-8"
+                  >
+                    <option value="" selected disabled>
+                      Select your interest
+                    </option>
+                    <option value="starter">Starter Plan</option>
+                    <option value="growth">Growth Plan</option>
+                    <option value="premium">Premium Plan</option>
+                    <option value="advisory">Financial Advisory</option>
+                    <option value="wealth">Wealth Management</option>
+                  </select>
+                  <div
+                    class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none"
+                  >
+                    <i class="ri-arrow-down-s-line text-gray-400"></i>
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <label
+                  for="message"
+                  class="block text-sm font-medium text-gray-700 mb-1"
+                  >Message</label
+                >
+                <textarea
+                  id="message"
+                  name="message"
+                  rows="4"
+                  class="w-full px-4 py-3 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-colors"
+                  placeholder="Tell us about your investment goals"
+                ></textarea>
+              </div>
+
+              <div class="flex items-start">
+                <label class="custom-checkbox">
+                  <input type="checkbox" name="terms" />
+                  <span class="checkmark"></span>
+                  <span class="ml-2 text-sm text-gray-600"
+                    >I agree to receive communications from Intec Investment
+                    Platform</span
+                  >
+                </label>
+              </div>
+
+              <div>
+                <button
+                  type="submit"
+                  id="submit-form"
+                  class="w-full md:w-auto bg-primary text-white px-8 py-3 rounded-button font-medium hover:bg-primary/90 transition-colors shadow-md !rounded-button whitespace-nowrap"
+                >
+                  Submit Inquiry
+                </button>
+              </div>
+            </form>
+          </div>
+
+          <div
+            class="w-full lg:w-1/2 animate-fade-in"
+            style="transition-delay: 0.2s;"
+          >
+            <div class="bg-gray-50 p-8 rounded-lg h-full">
+              <h3 class="text-2xl font-semibold text-gray-900 mb-6">
+                Contact Information
+              </h3>
+
+              <div class="space-y-6 mb-8">
+                <div class="flex items-start">
+                  <div
+                    class="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center mr-4 mt-1"
+                  >
+                    <i class="ri-map-pin-line text-xl text-primary"></i>
+                  </div>
+                  <div>
+                    <h4 class="font-medium text-gray-900 mb-1">
+                      Office Location
+                    </h4>
+                    <p class="text-gray-600">
+                      123 Financial District, Bandra Kurla Complex<br />Mumbai,
+                      Maharashtra 400051
+                    </p>
+                  </div>
+                </div>
+
+                <div class="flex items-start">
+                  <div
+                    class="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center mr-4 mt-1"
+                  >
+                    <i class="ri-phone-line text-xl text-primary"></i>
+                  </div>
+                  <div>
+                    <h4 class="font-medium text-gray-900 mb-1">Phone Number</h4>
+                    <p class="text-gray-600">+91 22 1234 5678</p>
+                    <p class="text-gray-600">+91 98765 43210 (Toll Free)</p>
+                  </div>
+                </div>
+
+                <div class="flex items-start">
+                  <div
+                    class="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center mr-4 mt-1"
+                  >
+                    <i class="ri-mail-line text-xl text-primary"></i>
+                  </div>
+                  <div>
+                    <h4 class="font-medium text-gray-900 mb-1">
+                      Email Address
+                    </h4>
+                    <p class="text-gray-600">info@intecinvestment.in</p>
+                    <p class="text-gray-600">support@intecinvestment.in</p>
+                  </div>
+                </div>
+
+                <div class="flex items-start">
+                  <div
+                    class="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center mr-4 mt-1"
+                  >
+                    <i class="ri-time-line text-xl text-primary"></i>
+                  </div>
+                  <div>
+                    <h4 class="font-medium text-gray-900 mb-1">
+                      Business Hours
+                    </h4>
+                    <p class="text-gray-600">
+                      Monday - Friday: 9:00 AM - 6:00 PM
+                    </p>
+                    <p class="text-gray-600">Saturday: 10:00 AM - 2:00 PM</p>
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <h4 class="font-medium text-gray-900 mb-4">Follow Us</h4>
+                <div class="flex space-x-4">
+                  <a
+                    href="#"
+                    class="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center hover:bg-primary hover:text-white transition-colors"
+                  >
+                    <i class="ri-facebook-fill"></i>
+                  </a>
+                  <a
+                    href="#"
+                    class="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center hover:bg-primary hover:text-white transition-colors"
+                  >
+                    <i class="ri-twitter-fill"></i>
+                  </a>
+                  <a
+                    href="#"
+                    class="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center hover:bg-primary hover:text-white transition-colors"
+                  >
+                    <i class="ri-linkedin-fill"></i>
+                  </a>
+                  <a
+                    href="#"
+                    class="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center hover:bg-primary hover:text-white transition-colors"
+                  >
+                    <i class="ri-instagram-line"></i>
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Newsletter Section -->
+    <section class="py-16 bg-gray-900">
+      <div class="container mx-auto px-4">
+        <div class="max-w-4xl mx-auto text-center">
+          <h2 class="text-3xl font-bold text-white mb-4">
+            Subscribe to Our Newsletter
+          </h2>
+          <p class="text-gray-300 mb-8">
+            Stay updated with the latest investment insights, market trends, and
+            exclusive offers.
+          </p>
+
+          <form
+            id="newsletter-form"
+            class="flex flex-col sm:flex-row gap-4 max-w-xl mx-auto"
+          >
+            <input
+              type="email"
+              placeholder="Your email address"
+              class="flex-1 px-4 py-3 rounded-button border-none focus:ring-2 focus:ring-primary outline-none text-gray-800"
+            />
+            <button
+              type="submit"
+              id="subscribe-btn"
+              class="bg-primary text-white px-6 py-3 rounded-button font-medium hover:bg-primary/90 transition-colors !rounded-button whitespace-nowrap"
+            >
+              Subscribe
+            </button>
+          </form>
+
+          <p class="text-gray-400 text-sm mt-4">
+            We respect your privacy. Unsubscribe at any time.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white pt-16 pb-8">
+      <div class="container mx-auto px-4">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
+          <div>
+            <a
+              href="#"
+              class="text-2xl font-['Pacifico'] text-white mb-6 inline-block"
+              >Intec</a
+            >
+            <p class="text-gray-300 mb-6">
+              Intec Investment Platform provides innovative financial solutions
+              to help you achieve your investment goals with confidence.
+            </p>
+            <div class="flex space-x-4">
+              <a
+                href="#"
+                class="text-gray-300 hover:text-white transition-colors"
+              >
+                <i class="ri-facebook-fill"></i>
+              </a>
+              <a
+                href="#"
+                class="text-gray-300 hover:text-white transition-colors"
+              >
+                <i class="ri-twitter-fill"></i>
+              </a>
+              <a
+                href="#"
+                class="text-gray-300 hover:text-white transition-colors"
+              >
+                <i class="ri-linkedin-fill"></i>
+              </a>
+              <a
+                href="#"
+                class="text-gray-300 hover:text-white transition-colors"
+              >
+                <i class="ri-instagram-line"></i>
+              </a>
+            </div>
+          </div>
+
+          <div>
+            <h3 class="text-lg font-semibold mb-6">Quick Links</h3>
+            <ul class="space-y-3">
+              <li>
+                <a
+                  href="#home"
+                  class="text-gray-300 hover:text-white transition-colors"
+                  >Home</a
+                >
+              </li>
+              <li>
+                <a
+                  href="#about"
+                  class="text-gray-300 hover:text-white transition-colors"
+                  >About Us</a
+                >
+              </li>
+              <li>
+                <a
+                  href="#services"
+                  class="text-gray-300 hover:text-white transition-colors"
+                  >Services</a
+                >
+              </li>
+              <li>
+                <a
+                  href="#features"
+                  class="text-gray-300 hover:text-white transition-colors"
+                  >Features</a
+                >
+              </li>
+              <li>
+                <a
+                  href="#contact"
+                  class="text-gray-300 hover:text-white transition-colors"
+                  >Contact</a
+                >
+              </li>
+            </ul>
+          </div>
+
+          <div>
+            <h3 class="text-lg font-semibold mb-6">Services</h3>
+            <ul class="space-y-3">
+              <li>
+                <a
+                  href="#services"
+                  class="text-gray-300 hover:text-white transition-colors"
+                  >Investment Plans</a
+                >
+              </li>
+              <li>
+                <a
+                  href="#services"
+                  class="text-gray-300 hover:text-white transition-colors"
+                  >Financial Advisory</a
+                >
+              </li>
+              <li>
+                <a
+                  href="#services"
+                  class="text-gray-300 hover:text-white transition-colors"
+                  >Wealth Management</a
+                >
+              </li>
+              <li>
+                <a
+                  href="#services"
+                  class="text-gray-300 hover:text-white transition-colors"
+                  >Tax Planning</a
+                >
+              </li>
+              <li>
+                <a
+                  href="#services"
+                  class="text-gray-300 hover:text-white transition-colors"
+                  >Retirement Planning</a
+                >
+              </li>
+            </ul>
+          </div>
+
+          <div>
+            <h3 class="text-lg font-semibold mb-6">Contact Info</h3>
+            <ul class="space-y-3">
+              <li class="flex items-start">
+                <div class="w-5 h-5 flex items-center justify-center mt-1 mr-3">
+                  <i class="ri-map-pin-line"></i>
+                </div>
+                <span class="text-gray-300"
+                  >123 Financial District, BKC<br />Mumbai, Maharashtra
+                  400051</span
+                >
+              </li>
+              <li class="flex items-start">
+                <div class="w-5 h-5 flex items-center justify-center mt-1 mr-3">
+                  <i class="ri-phone-line"></i>
+                </div>
+                <span class="text-gray-300">+91 22 1234 5678</span>
+              </li>
+              <li class="flex items-start">
+                <div class="w-5 h-5 flex items-center justify-center mt-1 mr-3">
+                  <i class="ri-mail-line"></i>
+                </div>
+                <span class="text-gray-300">info@intecinvestment.in</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="border-t border-gray-700 pt-8">
+          <div class="flex flex-col md:flex-row justify-between items-center">
+            <p class="text-gray-400 text-sm mb-4 md:mb-0">
+              &copy; 2025 Intec Investment Platform. All rights reserved.
+            </p>
+            <div class="flex items-center space-x-6">
+              <a
+                href="#"
+                class="text-gray-400 hover:text-white text-sm transition-colors"
+                >Privacy Policy</a
+              >
+              <a
+                href="#"
+                class="text-gray-400 hover:text-white text-sm transition-colors"
+                >Terms of Service</a
+              >
+              <a
+                href="#"
+                class="text-gray-400 hover:text-white text-sm transition-colors"
+                >Disclaimer</a
+              >
+            </div>
+          </div>
+          <div class="mt-6 flex justify-center space-x-4">
+            <div class="w-8 h-5 flex items-center justify-center">
+              <i class="ri-visa-fill text-2xl text-gray-400"></i>
+            </div>
+            <div class="w-8 h-5 flex items-center justify-center">
+              <i class="ri-mastercard-fill text-2xl text-gray-400"></i>
+            </div>
+            <div class="w-8 h-5 flex items-center justify-center">
+              <i class="ri-paypal-fill text-2xl text-gray-400"></i>
+            </div>
+            <div class="w-8 h-5 flex items-center justify-center">
+              <i class="ri-bank-card-fill text-2xl text-gray-400"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toast">
+      <div class="w-6 h-6 flex items-center justify-center">
+        <i class="ri-check-line"></i>
+      </div>
+      <span id="toast-message">Message sent successfully!</span>
+    </div>
+
+    <!-- Scripts -->
+    <script id="header-scroll-script">
+      document.addEventListener("DOMContentLoaded", function () {
+        const header = document.getElementById("header");
+
+        window.addEventListener("scroll", function () {
+          if (window.scrollY > 50) {
+            header.classList.remove("header-transparent");
+            header.classList.add("header-solid");
+          } else {
+            header.classList.add("header-transparent");
+            header.classList.remove("header-solid");
+          }
+        });
+      });
+    </script>
+
+    <script id="mobile-menu-script">
+      document.addEventListener("DOMContentLoaded", function () {
+        const hamburgerButton = document.getElementById("hamburger-button");
+        const closeMenuButton = document.getElementById("close-menu");
+        const mobileMenu = document.getElementById("mobile-menu");
+        const overlay = document.getElementById("overlay");
+        const mobileDropdownButton = document.getElementById(
+          "mobile-dropdown-button",
+        );
+        const mobileDropdownMenu = document.getElementById("mobile-dropdown-menu");
+
+        function toggleMenu() {
+          hamburgerButton.classList.toggle("open");
+          mobileMenu.classList.toggle("open");
+          overlay.classList.toggle("open");
+          document.body.classList.toggle("overflow-hidden");
+        }
+
+        hamburgerButton.addEventListener("click", toggleMenu);
+        closeMenuButton.addEventListener("click", toggleMenu);
+        overlay.addEventListener("click", toggleMenu);
+
+        mobileDropdownButton.addEventListener("click", function () {
+          mobileDropdownMenu.classList.toggle("hidden");
+          const icon = mobileDropdownButton.querySelector("i");
+          if (mobileDropdownMenu.classList.contains("hidden")) {
+            icon.classList.remove("ri-arrow-up-s-line");
+            icon.classList.add("ri-arrow-down-s-line");
+          } else {
+            icon.classList.remove("ri-arrow-down-s-line");
+            icon.classList.add("ri-arrow-up-s-line");
+          }
+        });
+
+        // Close mobile menu when clicking on a link
+        const mobileLinks = mobileMenu.querySelectorAll("a");
+        mobileLinks.forEach((link) => {
+          link.addEventListener("click", function () {
+            if (mobileMenu.classList.contains("open")) {
+              toggleMenu();
+            }
+          });
+        });
+      });
+    </script>
+
+    <script id="scroll-animation-script">
+      document.addEventListener("DOMContentLoaded", function () {
+        const animatedElements = document.querySelectorAll(".animate-fade-in");
+
+        function checkScroll() {
+          animatedElements.forEach((element) => {
+            const elementTop = element.getBoundingClientRect().top;
+            const windowHeight = window.innerHeight;
+
+            if (elementTop < windowHeight * 0.9) {
+              element.classList.add("visible");
+            }
+          });
+        }
+
+        // Initial check
+        checkScroll();
+
+        // Check on scroll
+        window.addEventListener("scroll", checkScroll);
+      });
+    </script>
+
+    <script id="tab-script">
+      document.addEventListener("DOMContentLoaded", function () {
+        const tabButtons = document.querySelectorAll(".tab-button");
+        const tabContents = document.querySelectorAll(".tab-content");
+
+        tabButtons.forEach((button) => {
+          button.addEventListener("click", function () {
+            // Remove active class from all buttons
+            tabButtons.forEach((btn) => {
+              btn.classList.remove("active");
+              btn.classList.remove("bg-primary");
+              btn.classList.remove("text-white");
+            });
+
+            // Add active class to clicked button
+            this.classList.add("active");
+            this.classList.add("bg-primary");
+            this.classList.add("text-white");
+
+            // Hide all tab contents
+            tabContents.forEach((content) => {
+              content.classList.remove("active");
+            });
+
+            // Show the corresponding tab content
+            const tabId = this.getAttribute("data-tab");
+            document.getElementById(tabId).classList.add("active");
+          });
+        });
+      });
+    </script>
+
+    <script id="faq-script">
+      document.addEventListener("DOMContentLoaded", function () {
+        const faqButtons = document.querySelectorAll(".faq-button");
+
+        faqButtons.forEach((button) => {
+          button.addEventListener("click", function () {
+            const faqId = this.getAttribute("data-faq");
+            const answer = document.getElementById(faqId);
+            const icon = this.querySelector(".faq-icon");
+
+            // Toggle answer visibility
+            if (answer.classList.contains("hidden")) {
+              answer.classList.remove("hidden");
+              icon.classList.remove("ri-add-line");
+              icon.classList.add("ri-subtract-line");
+              this.parentElement.classList.add("shadow-md");
+            } else {
+              answer.classList.add("hidden");
+              icon.classList.remove("ri-subtract-line");
+              icon.classList.add("ri-add-line");
+              this.parentElement.classList.remove("shadow-md");
+            }
+          });
+        });
+      });
+    </script>
+
+    <script id="form-script">
+      document.addEventListener("DOMContentLoaded", function () {
+        const contactForm = document.getElementById("contact-form");
+        const newsletterForm = document.getElementById("newsletter-form");
+        const toast = document.getElementById("toast");
+        const toastMessage = document.getElementById("toast-message");
+
+        function showToast(message) {
+          toastMessage.textContent = message;
+          toast.classList.add("show");
+
+          setTimeout(() => {
+            toast.classList.remove("show");
+          }, 3000);
+        }
+
+        contactForm.addEventListener("submit", function (e) {
+          e.preventDefault();
+
+          // Simulate form submission
+          setTimeout(() => {
+            showToast("Your inquiry has been submitted successfully!");
+            contactForm.reset();
+          }, 1000);
+        });
+
+        newsletterForm.addEventListener("submit", function (e) {
+          e.preventDefault();
+
+          // Simulate form submission
+          setTimeout(() => {
+            showToast("Thank you for subscribing to our newsletter!");
+            newsletterForm.reset();
+          }, 1000);
+        });
+
+        // Form validation would be added here
+      });
+    </script>
+
+    <script id="calculator-script">
+      document.addEventListener("DOMContentLoaded", function () {
+        const initialInvestmentInput = document.getElementById("initial-investment");
+        const monthlyContributionInput = document.getElementById(
+          "monthly-contribution",
+        );
+        const investmentPeriodInput = document.getElementById("investment-period");
+        const annualReturnInput = document.getElementById("annual-return");
+        const periodValue = document.getElementById("period-value");
+        const returnValue = document.getElementById("return-value");
+        const futureValueElement = document.getElementById("future-value");
+        const calculateBtn = document.getElementById("calculate-btn");
+
+        // Update range slider values
+        investmentPeriodInput.addEventListener("input", function () {
+          periodValue.textContent = this.value;
+          calculateFutureValue();
+        });
+
+        annualReturnInput.addEventListener("input", function () {
+          returnValue.textContent = this.value + "%";
+          calculateFutureValue();
+        });
+
+        // Format number inputs
+        function formatNumberInput(input) {
+          input.addEventListener("blur", function () {
+            const value = this.value.replace(/,/g, "");
+            if (!isNaN(value) && value !== "") {
+              this.value = parseInt(value).toLocaleString("en-IN");
+            }
+          });
+
+          input.addEventListener("focus", function () {
+            this.value = this.value.replace(/,/g, "");
+          });
+        }
+
+        formatNumberInput(initialInvestmentInput);
+        formatNumberInput(monthlyContributionInput);
+
+        // Calculate future value
+        function calculateFutureValue() {
+          const initialInvestment =
+            parseFloat(initialInvestmentInput.value.replace(/,/g, "")) || 0;
+          const monthlyContribution =
+            parseFloat(monthlyContributionInput.value.replace(/,/g, "")) || 0;
+          const years = parseInt(investmentPeriodInput.value) || 0;
+          const annualReturn = parseFloat(annualReturnInput.value) / 100 || 0;
+
+          const monthlyRate = annualReturn / 12;
+          const months = years * 12;
+
+          let futureValue = initialInvestment * Math.pow(1 + monthlyRate, months);
+
+          if (monthlyContribution > 0) {
+            futureValue +=
+              monthlyContribution *
+              ((Math.pow(1 + monthlyRate, months) - 1) / monthlyRate);
+          }
+
+          futureValueElement.textContent =
+            "₹ " + Math.round(futureValue).toLocaleString("en-IN");
+        }
+
+        calculateBtn.addEventListener("click", calculateFutureValue);
+
+        // Initial calculation
+        calculateFutureValue();
+      });
+    </script>
+
+    <script id="performance-chart-script">
+      document.addEventListener("DOMContentLoaded", function () {
+        const chartElement = document.getElementById("performance-chart");
+
+        if (chartElement) {
+          const chart = echarts.init(chartElement);
+
+          const option = {
+            animation: false,
+            tooltip: {
+              trigger: "axis",
+              backgroundColor: "rgba(255, 255, 255, 0.8)",
+              borderColor: "#eee",
+              borderWidth: 1,
+              textStyle: {
+                color: "#1f2937",
+              },
+            },
+            legend: {
+              data: ["Conservative", "Balanced", "Growth"],
+              textStyle: {
+                color: "#1f2937",
+              },
+            },
+            grid: {
+              left: "3%",
+              right: "4%",
+              bottom: "3%",
+              containLabel: true,
+            },
+            xAxis: {
+              type: "category",
+              boundaryGap: false,
+              data: ["2020", "2021", "2022", "2023", "2024", "2025"],
+              axisLine: {
+                lineStyle: {
+                  color: "#ddd",
+                },
+              },
+              axisLabel: {
+                color: "#1f2937",
+              },
+            },
+            yAxis: {
+              type: "value",
+              axisLine: {
+                lineStyle: {
+                  color: "#ddd",
+                },
+              },
+              axisLabel: {
+                color: "#1f2937",
+                formatter: "{value}%",
+              },
+              splitLine: {
+                lineStyle: {
+                  color: "#eee",
+                },
+              },
+            },
+            series: [
+              {
+                name: "Conservative",
+                type: "line",
+                smooth: true,
+                lineStyle: {
+                  width: 3,
+                  color: "rgba(87, 181, 231, 1)",
+                },
+                areaStyle: {
+                  color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                    {
+                      offset: 0,
+                      color: "rgba(87, 181, 231, 0.2)",
+                    },
+                    {
+                      offset: 1,
+                      color: "rgba(87, 181, 231, 0)",
+                    },
+                  ]),
+                },
+                emphasis: {
+                  focus: "series",
+                },
+                data: [5.2, 6.8, 7.5, 8.1, 8.6, 9.2],
+              },
+              {
+                name: "Balanced",
+                type: "line",
+                smooth: true,
+                lineStyle: {
+                  width: 3,
+                  color: "rgba(141, 211, 199, 1)",
+                },
+                areaStyle: {
+                  color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                    {
+                      offset: 0,
+                      color: "rgba(141, 211, 199, 0.2)",
+                    },
+                    {
+                      offset: 1,
+                      color: "rgba(141, 211, 199, 0)",
+                    },
+                  ]),
+                },
+                emphasis: {
+                  focus: "series",
+                },
+                data: [8.5, 10.2, 11.4, 12.3, 13.1, 14.0],
+              },
+              {
+                name: "Growth",
+                type: "line",
+                smooth: true,
+                lineStyle: {
+                  width: 3,
+                  color: "rgba(251, 191, 114, 1)",
+                },
+                areaStyle: {
+                  color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                    {
+                      offset: 0,
+                      color: "rgba(251, 191, 114, 0.2)",
+                    },
+                    {
+                      offset: 1,
+                      color: "rgba(251, 191, 114, 0)",
+                    },
+                  ]),
+                },
+                emphasis: {
+                  focus: "series",
+                },
+                data: [11.8, 14.2, 15.6, 16.9, 17.8, 19.2],
+              },
+            ],
+          };
+
+          chart.setOption(option);
+
+          // Responsive chart
+          window.addEventListener("resize", function () {
+            chart.resize();
+          });
+        }
+      });
+    </script>
+  </body>
+</html>
